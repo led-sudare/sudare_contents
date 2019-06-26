@@ -10,40 +10,40 @@ import (
 )
 
 type Cylinder struct {
-	images  []*image.RGBA
-	gcs     []*draw2dimg.GraphicContext
-	rawData []byte
+	images          []*image.RGBA
+	graphicsContext []*draw2dimg.GraphicContext
+	rawData         []byte
 }
 
 func NewCylinder() *Cylinder {
 
 	c := new(Cylinder)
 	c.images = make([]*image.RGBA, CylinderCount)
-	c.gcs = make([]*draw2dimg.GraphicContext, CylinderCount)
-	c.rawData = make([]byte, CylinderWidth*CylinderHeight*CylinderCount*2)
+	c.graphicsContext = make([]*draw2dimg.GraphicContext, CylinderCount)
+	c.rawData = make([]byte, CylinderRadius*CylinderHeight*CylinderCount*2)
 	util.ConcurrentEnum(0, CylinderCount, func(i int) {
-		c.images[i] = image.NewRGBA(image.Rect(0, 0, CylinderWidth, CylinderHeight))
-		c.gcs[i] = draw2dimg.NewGraphicContext(c.images[i])
+		c.images[i] = image.NewRGBA(image.Rect(0, 0, CylinderRadius, CylinderHeight))
+		c.graphicsContext[i] = draw2dimg.NewGraphicContext(c.images[i])
 	})
 	return c
 }
 
 func (c *Cylinder) Render(draw func(int, *draw2dimg.GraphicContext)) {
 	util.ConcurrentEnum(0, CylinderCount, func(i int) {
-		gc := c.gcs[i]
+		gc := c.graphicsContext[i]
 		gc.SetFillColor(color.RGBA{0x00, 0x00, 0x00, 0xff})
-		draw2dkit.Rectangle(gc, 0, 0, CylinderWidth, CylinderHeight)
+		draw2dkit.Rectangle(gc, 0, 0, CylinderRadius, CylinderHeight)
 		gc.Fill()
-		draw(i, c.gcs[i])
+		draw(i, c.graphicsContext[i])
 	})
 }
 
 func (c *Cylinder) GetData() []byte {
 
 	util.ConcurrentEnum(0, CylinderCount, func(i int) {
-		for x := 0; x < CylinderWidth; x++ {
+		for x := 0; x < CylinderRadius; x++ {
 			for y := 0; y < CylinderHeight; y++ {
-				idx565 := (i*CylinderHeight*CylinderWidth + CylinderWidth*y + x) * 2
+				idx565 := (i*CylinderHeight*CylinderRadius + CylinderRadius*y + x) * 2
 				//				log.Info(idx565)
 				r, g, b, _ := c.images[i].At(x, y).RGBA()
 				c.rawData[idx565+0] = byte(r)&0xF8 + byte(g)>>5
