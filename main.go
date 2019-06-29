@@ -17,7 +17,7 @@ type Configs struct {
 
 func NewConfigs() Configs {
 	return Configs{
-		ZmqTarget: "0.0.0.0:5563",
+		ZmqTarget: "0.0.0.0:5510",
 	}
 }
 
@@ -26,7 +26,7 @@ func main() {
 	util.ReadConfig(&configs)
 
 	var (
-		optInputPort = flag.String("r", configs.ZmqTarget, "Specify IP and port of server zeromq PUB running.")
+		optInputPort = flag.String("r", configs.ZmqTarget, "Specify IP and port of server zeromq SUB running.")
 	)
 
 	flag.Parse()
