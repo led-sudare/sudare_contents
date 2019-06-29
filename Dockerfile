@@ -12,7 +12,7 @@ RUN apk update && \
 
 ENV GO111MODULE=on
 
-RUN mkdir /go/src/sudare_contents
-WORKDIR /go/src/sudare_contents
+ARG cname
+WORKDIR /go/src/${cname}
 
 ENTRYPOINT ["./docker-entrypoint.sh"]

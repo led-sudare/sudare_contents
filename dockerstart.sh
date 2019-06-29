@@ -1,2 +1,3 @@
 #!/bin/sh
-docker restart sudare-contents
+cname=`cat ./cname`
+docker restart $cname
