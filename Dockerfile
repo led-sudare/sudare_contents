@@ -11,7 +11,6 @@ RUN apk update && \
     libsodium
 
 ENV GO111MODULE=on
-EXPOSE 5563
 
 RUN mkdir /go/src/sudare_contents
 WORKDIR /go/src/sudare_contents

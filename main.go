@@ -33,11 +33,8 @@ func main() {
 
 	endpoint := "tcp://" + *optInputPort
 	log.Info("New Pub: ", endpoint)
-	zmqsock, err := zmq.NewPub(endpoint)
-	if err != nil {
-		panic(err)
-	}
-	err = zmqsock.Connect(endpoint)
+	zmqsock := zmq.NewSock(zmq.Pub)
+	err := zmqsock.Connect(endpoint)
 	if err != nil {
 		panic(err)
 	}
