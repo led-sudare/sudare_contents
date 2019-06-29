@@ -5,20 +5,34 @@ import (
 	"time"
 
 	"sudare_contents/lib/content"
+	"sudare_contents/lib/util"
 
 	log "github.com/cihub/seelog"
 	zmq "github.com/zeromq/goczmq"
 )
 
-var (
-	logVerbose   = flag.Bool("v", false, "output detailed log.")
-	optInputPort = flag.String("r", "127.0.0.1:5563", "Specify IP and port of server main_realsense_serivce.py running.")
-)
+type Configs struct {
+	ZmqTarget string `json:"zmqTarget"`
+}
+
+func NewConfigs() Configs {
+	return Configs{
+		ZmqTarget: "0.0.0.0:5563",
+	}
+}
 
 func main() {
+	configs := NewConfigs()
+	util.ReadConfig(&configs)
+
+	var (
+		optInputPort = flag.String("r", configs.ZmqTarget, "Specify IP and port of server zeromq PUB running.")
+	)
+
 	flag.Parse()
 
 	endpoint := "tcp://" + *optInputPort
+	log.Info("New Pub: ", endpoint)
 	zmqsock, err := zmq.NewPub(endpoint)
 	if err != nil {
 		panic(err)

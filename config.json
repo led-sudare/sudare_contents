@@ -1,0 +1,4 @@
+{
+    "//comment": "zeroMq PUB.",
+    "zmqTarget": "0.0.0.0:5563"
+}
