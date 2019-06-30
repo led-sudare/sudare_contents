@@ -2,13 +2,11 @@ package main
 
 import (
 	"flag"
-	"time"
+	"net/http"
 
 	"sudare_contents/lib/content"
 	"sudare_contents/lib/util"
-
-	log "github.com/cihub/seelog"
-	zmq "github.com/zeromq/goczmq"
+	"sudare_contents/lib/webapi"
 )
 
 type Configs struct {
@@ -32,23 +30,11 @@ func main() {
 	flag.Parse()
 
 	endpoint := "tcp://" + *optInputPort
-	log.Info("New Pub: ", endpoint)
-	zmqsock := zmq.NewSock(zmq.Pub)
-	err := zmqsock.Connect(endpoint)
-	if err != nil {
-		panic(err)
-	}
-	defer zmqsock.Destroy()
 
-	c := content.NewContentSinLine()
-	t := time.NewTicker(50 * time.Millisecond) // 3秒おきに通知
-	defer t.Stop()                             // タイマを止める。
+	sender := content.NewContentSender(endpoint)
+	sender.SetContentToPlay(content.NewContentSinLine())
 
-	for {
-		select {
-		case <-t.C:
-			zmqsock.SendFrame(c.GetFrame(), zmq.FlagNone)
-			log.Info("Send Frame.")
-		}
-	}
+	webapi.SetUpWebAPIforCommon(sender)
+
+	http.ListenAndServe(":5001", nil)
 }
