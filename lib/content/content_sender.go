@@ -1,13 +1,15 @@
 package content
 
 import (
+	"reflect"
+	"time"
+
 	log "github.com/cihub/seelog"
 	zmq "github.com/zeromq/goczmq"
-	"time"
 )
 
 type ContentSender interface {
-	SetContentToPlay(c CylinderContent)
+	SetContentToPlay(contents []CylinderContent, interval time.Duration)
 	Enable(enable bool)
 	IsEnable() bool
 }
@@ -24,6 +26,7 @@ func NewContentSender(endpoint string) ContentSender {
 
 	sender.con = make(chan CylinderContent)
 	sender.enable = make(chan bool)
+	sender.isEnable = true
 
 	log.Info("New Pub: ", endpoint)
 	zmqsock := zmq.NewSock(zmq.Pub)
@@ -35,8 +38,13 @@ func NewContentSender(endpoint string) ContentSender {
 	return sender
 }
 
-func (s *conentSenderImpl) SetContentToPlay(c CylinderContent) {
-	s.con <- c
+func (s *conentSenderImpl) SetContentToPlay(contents []CylinderContent, interval time.Duration) {
+	for {
+		for _, c := range contents {
+			s.con <- c
+			time.Sleep(interval)
+		}
+	}
 }
 
 func (s *conentSenderImpl) Enable(enable bool) {
@@ -54,14 +62,14 @@ func worker(zmqsock *zmq.Sock,
 	defer zmqsock.Destroy()
 
 	var c CylinderContent
-	enable := false
+	enable := sender.IsEnable()
 	t := time.NewTicker(50 * time.Millisecond) // 3秒おきに通知
 	defer t.Stop()                             // タイマを止める。
 
 	for {
 		select {
 		case c = <-sender.con:
-			log.Info("c:", c)
+			log.Info("change content: ", reflect.TypeOf(c))
 		case enable = <-sender.enable:
 			log.Info("enable:", enable)
 		case <-t.C:

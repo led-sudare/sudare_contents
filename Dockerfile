@@ -12,6 +12,8 @@ RUN apk update && \
 
 ENV GO111MODULE=on
 
+EXPOSE 5004
+
 ARG cname
 WORKDIR /go/src/${cname}
 

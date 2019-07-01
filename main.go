@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"net/http"
+	"time"
 
 	"sudare_contents/lib/content"
 	"sudare_contents/lib/util"
@@ -32,9 +33,13 @@ func main() {
 	endpoint := "tcp://" + *optInputPort
 
 	sender := content.NewContentSender(endpoint)
-	sender.SetContentToPlay(content.NewContentSinLine())
+	contents := []content.CylinderContent{
+		content.NewContentSinLine(),
+		content.NewContentSinLine2(),
+	}
+	go sender.SetContentToPlay(contents, 4*time.Second)
 
 	webapi.SetUpWebAPIforCommon(sender)
 
-	http.ListenAndServe(":5001", nil)
+	http.ListenAndServe(":5004", nil)
 }
