@@ -61,21 +61,30 @@ func worker(zmqsock *zmq.Sock,
 
 	defer zmqsock.Destroy()
 
+	var duration time.Duration
+
 	var c CylinderContent
 	enable := sender.IsEnable()
-	t := time.NewTicker(50 * time.Millisecond) // 3秒おきに通知
-	defer t.Stop()                             // タイマを止める。
+	frameTicker := time.NewTicker(50 * time.Millisecond)
+	mesureTicker := time.NewTicker(3 * time.Second)
+
+	defer frameTicker.Stop()
+	defer mesureTicker.Stop()
 
 	for {
 		select {
 		case c = <-sender.con:
+			c.Begin()
 			log.Info("change content: ", reflect.TypeOf(c))
 		case enable = <-sender.enable:
 			log.Info("enable:", enable)
-		case <-t.C:
+		case <-mesureTicker.C:
+			log.Info("Send Frame... last frame duration:", duration)
+		case <-frameTicker.C:
 			if c != nil && enable {
+				start := time.Now()
 				zmqsock.SendFrame(c.GetFrame(), zmq.FlagNone)
-				log.Info("Send Frame.")
+				duration = time.Since(start)
 			}
 		}
 	}

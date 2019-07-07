@@ -1,25 +1,29 @@
 package content
 
 import (
-	"image/color"
 	"math"
 	"sudare_contents/lib"
+	"sudare_contents/lib/util"
 
 	"github.com/llgcode/draw2d/draw2dimg"
 )
 
-type ContentSinLine2 struct {
+type ContentExLine struct {
 	data  *lib.Cylinder
 	count float64
 }
 
-func NewContentSinLine2() CylinderContent {
-	c := new(ContentSinLine2)
+func NewContentExLine() CylinderContent {
+	c := new(ContentExLine)
 	c.data = lib.NewCylinder()
 	return c
 }
 
-func (c *ContentSinLine2) GetFrame() []byte {
+func (c *ContentExLine) Begin() {
+
+}
+
+func (c *ContentExLine) GetFrame() []byte {
 	c.count += 0.1
 	c.data.Render(func(i int, gc *draw2dimg.GraphicContext) {
 
@@ -30,7 +34,9 @@ func (c *ContentSinLine2) GetFrame() []byte {
 
 		wave := sin * 20
 
-		gc.SetStrokeColor(color.RGBA{0xcc, 0x00, 0xff, 0xff})
+		color := util.GetRainbow(math.Abs(sin2))
+
+		gc.SetStrokeColor(color)
 		gc.SetLineWidth(1)
 
 		gc.MoveTo(0, center) // should always be called first for a new path

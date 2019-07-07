@@ -11,25 +11,25 @@ import (
 	"github.com/llgcode/draw2d/draw2dimg"
 )
 
-type ContentSinLine struct {
+type ContentSinWideLine struct {
 	data      *lib.Cylinder
 	count     float64
 	lineQueue *list.List
 	start     time.Time
 }
 
-func NewContentSinLine() CylinderContent {
-	c := new(ContentSinLine)
+func NewContentSinWideLine() CylinderContent {
+	c := new(ContentSinWideLine)
 	c.data = lib.NewCylinder()
 	c.lineQueue = list.New()
 	return c
 }
 
-func (c *ContentSinLine) Begin() {
+func (c *ContentSinWideLine) Begin() {
 	c.start = time.Now()
 }
 
-func (c *ContentSinLine) GetFrame() []byte {
+func (c *ContentSinWideLine) GetFrame() []byte {
 	c.data.Clear()
 
 	duration := time.Now().Sub(c.start)
@@ -43,7 +43,7 @@ func (c *ContentSinLine) GetFrame() []byte {
 			y:      0,
 			count:  0,
 			len:    lib.CylinderRadius/2 + rand.Float64()*lib.CylinderRadius/2,
-			height: rand.Float64() * 20,
+			height: rand.Float64() * 15,
 			yspeed: rand.Float64()*2 + 0.5,
 			cspeed: rand.Float64()*0.5 + 0.1,
 			colorh: rand.Float64(),
@@ -62,9 +62,9 @@ func (c *ContentSinLine) GetFrame() []byte {
 			//			color := util.GetRainbow((colordepth + 1) / 2)
 			color := util.GetRainbow(lined.colorh)
 			gc.SetStrokeColor(color)
-			gc.SetLineWidth(3)
+			gc.SetLineWidth(5)
 
-			gc.MoveTo(0, lined.y) // should always be called first for a new path
+			gc.MoveTo(15, lined.y-wave) // should always be called first for a new path
 			gc.LineTo(15, lined.y+wave)
 			gc.Close()
 			gc.FillStroke()

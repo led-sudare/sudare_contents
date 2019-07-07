@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"math/rand"
 	"net/http"
 	"time"
 
@@ -21,6 +22,9 @@ func NewConfigs() Configs {
 }
 
 func main() {
+	util.InitColorUtil()
+	rand.Seed(time.Now().UnixNano())
+
 	configs := NewConfigs()
 	util.ReadConfig(&configs)
 
@@ -34,8 +38,10 @@ func main() {
 
 	sender := content.NewContentSender(endpoint)
 	contents := []content.CylinderContent{
+		//		content.NewContentExLine(),
+		content.NewContentSinWideLine(),
 		content.NewContentSinLine(),
-		content.NewContentSinLine2(),
+		content.NewContentCirWave(),
 	}
 	go sender.SetContentToPlay(contents, 4*time.Second)
 

@@ -28,14 +28,44 @@ func NewCylinder() *Cylinder {
 	return c
 }
 
-func (c *Cylinder) Render(draw func(int, *draw2dimg.GraphicContext)) {
+func (c *Cylinder) Clear() {
 	util.ConcurrentEnum(0, CylinderCount, func(i int) {
 		gc := c.graphicsContext[i]
 		gc.SetFillColor(color.RGBA{0x00, 0x00, 0x00, 0xff})
 		draw2dkit.Rectangle(gc, 0, 0, CylinderRadius, CylinderHeight)
 		gc.Fill()
+	})
+}
+
+func (c *Cylinder) Render(draw func(int, *draw2dimg.GraphicContext)) {
+	util.ConcurrentEnum(0, CylinderCount, func(i int) {
 		draw(i, c.graphicsContext[i])
 	})
+}
+
+func (c *Cylinder) RenderEachCylinder(draw func(i int)) {
+	util.ConcurrentEnum(0, CylinderCount, func(i int) {
+		draw(i)
+	})
+}
+
+// func (c *Cylinder) RenderEachPoint(draw func(x, y, i int)) {
+// 	util.ConcurrentEnum(0, CylinderCount, func(i int) {
+// 		gc := c.graphicsContext[i]
+// 		gc.SetFillColor(color.RGBA{0x00, 0x00, 0x00, 0xff})
+// 		draw2dkit.Rectangle(gc, 0, 0, CylinderRadius, CylinderHeight)
+// 		gc.Fill()
+
+// 		for x := 0; x < CylinderDiameter; x++ {
+// 			for y := 0; y < CylinderHeight; y++ {
+// 				draw(x, y, i)
+// 			}
+// 		}
+// 	})
+// }
+
+func (c *Cylinder) SetAt(x, y, i int, col color.Color) {
+	c.images[i].Set(x, y, col)
 }
 
 func (c *Cylinder) GetData() []byte {
