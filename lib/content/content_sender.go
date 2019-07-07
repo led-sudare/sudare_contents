@@ -66,7 +66,7 @@ func worker(zmqsock *zmq.Sock,
 	var c CylinderContent
 	enable := sender.IsEnable()
 	frameTicker := time.NewTicker(50 * time.Millisecond)
-	mesureTicker := time.NewTicker(3 * time.Second)
+	mesureTicker := time.NewTicker(2 * time.Second)
 
 	defer frameTicker.Stop()
 	defer mesureTicker.Stop()
